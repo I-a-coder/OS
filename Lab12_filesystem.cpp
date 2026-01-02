@@ -155,12 +155,14 @@ private:
         memcpy(buffer, &superblock, sizeof(Superblock));
         WriteBlock(0, buffer);
         
-        // Save bitmap (blocks 1-2)
-        memset(buffer, 0, BLOCK_SIZE);
-        memcpy(buffer, bitmap, sizeof(bitmap));
-        WriteBlock(1, buffer);
-        if (sizeof(bitmap) > BLOCK_SIZE) {
-            WriteBlock(2, (char*)bitmap + BLOCK_SIZE);
+        // Save bitmap (blocks 1-2) - safely handle large bitmap
+        int bitmapSize = sizeof(bitmap);
+        int blocks = (bitmapSize + BLOCK_SIZE - 1) / BLOCK_SIZE;
+        for (int i = 0; i < blocks; i++) {
+            memset(buffer, 0, BLOCK_SIZE);
+            int copySize = (i == blocks - 1) ? (bitmapSize - i * BLOCK_SIZE) : BLOCK_SIZE;
+            memcpy(buffer, (char*)bitmap + i * BLOCK_SIZE, copySize);
+            WriteBlock(1 + i, buffer);
         }
         
         // Save directory (blocks 3-9)
@@ -179,12 +181,13 @@ private:
         ReadBlock(0, buffer);
         memcpy(&superblock, buffer, sizeof(Superblock));
         
-        // Load bitmap
-        ReadBlock(1, buffer);
-        memcpy(bitmap, buffer, BLOCK_SIZE);
-        if (sizeof(bitmap) > BLOCK_SIZE) {
-            ReadBlock(2, buffer);
-            memcpy((char*)bitmap + BLOCK_SIZE, buffer, BLOCK_SIZE);
+        // Load bitmap - safely handle large bitmap
+        int bitmapSize = sizeof(bitmap);
+        int blocks = (bitmapSize + BLOCK_SIZE - 1) / BLOCK_SIZE;
+        for (int i = 0; i < blocks; i++) {
+            ReadBlock(1 + i, buffer);
+            int copySize = (i == blocks - 1) ? (bitmapSize - i * BLOCK_SIZE) : BLOCK_SIZE;
+            memcpy((char*)bitmap + i * BLOCK_SIZE, buffer, copySize);
         }
         
         // Load directory
