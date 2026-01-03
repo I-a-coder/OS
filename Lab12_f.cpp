@@ -342,7 +342,7 @@ public:
         cout << "Format Complete!\n";
         cout << "Partition is now mounted and ready!\n";
         if (ENCRYPTION_ENABLED) {
-            cout << "⚠️  ENCRYPTION IS ACTIVE - All data will be encrypted!\n";
+            cout << "  ENCRYPTION IS ACTIVE - All data will be encrypted!\n";
         }
         return true;
     }
@@ -368,7 +368,7 @@ public:
         cout << "Block Size: " << (BLOCK_SIZE / 1024) << " KB\n";
         cout << "Total Blocks: " << TOTAL_BLOCKS << "\n";
         cout << "Free Blocks: " << superblock.freeBlocks << "\n";
-        cout << "Encryption: " << (ENCRYPTION_ENABLED ? "ENABLED 🔒" : "DISABLED") << "\n";
+        cout << "Encryption: " << (ENCRYPTION_ENABLED ? "ENABLED " : "DISABLED") << "\n";
         cout << "======================================\n";
         return true;
     }
@@ -541,7 +541,7 @@ public:
         cout << "Directory Entries: " << DIR_ENTRIES << "\n";
         cout << "Max Filename: " << MAX_FILENAME << " bytes\n";
         cout << "Max File Size: " << (MAX_FILE_BLOCKS * BLOCK_SIZE / 1024) << " KB\n";
-        cout << "Encryption: " << (ENCRYPTION_ENABLED ? "ENABLED 🔒" : "DISABLED") << "\n";
+        cout << "Encryption: " << (ENCRYPTION_ENABLED ? "ENABLED " : "DISABLED") << "\n";
         cout << "==============================\n";
     }
 };
