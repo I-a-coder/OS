@@ -1,0 +1,72 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <time.h>
+
+#define MAX_NUM 1000
+
+int main() {
+    bool is_prime[MAX_NUM + 1];
+    int primes[MAX_NUM];
+    int prime_count = 0;
+    struct timespec start, end;
+    double elapsed_time;
+    
+    printf("=== Sieve of Eratosthenes - Iterative Version ===\n");
+    printf("Finding all prime numbers from 2 to %d\n\n", MAX_NUM);
+    
+    // Start timing
+    clock_gettime(CLOCK_MONOTONIC, &start);
+    
+    // Initialize all numbers as prime
+    for (int i = 0; i <= MAX_NUM; i++) {
+        is_prime[i] = true;
+    }
+    is_prime[0] = is_prime[1] = false;
+    
+    // Sieve of Eratosthenes algorithm
+    for (int p = 2; p * p <= MAX_NUM; p++) {
+        // If p is still marked as prime
+        if (is_prime[p]) {
+            // Mark all multiples of p as not prime
+            for (int i = p * p; i <= MAX_NUM; i += p) {
+                is_prime[i] = false;
+            }
+        }
+    }
+    
+    // Collect all primes
+    for (int i = 2; i <= MAX_NUM; i++) {
+        if (is_prime[i]) {
+            primes[prime_count++] = i;
+        }
+    }
+    
+    // End timing
+    clock_gettime(CLOCK_MONOTONIC, &end);
+    
+    // Calculate elapsed time
+    elapsed_time = (end.tv_sec - start.tv_sec) + 
+                   (end.tv_nsec - start.tv_nsec) / 1e9;
+    
+    // Print results
+    printf("Prime numbers found: %d\n\n", prime_count);
+    
+    printf("First 20 primes: ");
+    for (int i = 0; i < 20 && i < prime_count; i++) {
+        printf("%d ", primes[i]);
+    }
+    printf("\n\n");
+    
+    printf("Last 20 primes: ");
+    for (int i = (prime_count > 20 ? prime_count - 20 : 0); i < prime_count; i++) {
+        printf("%d ", primes[i]);
+    }
+    printf("\n\n");
+    
+    printf("=== Performance Statistics ===\n");
+    printf("Total execution time: %.9f seconds\n", elapsed_time);
+    printf("Time per prime found: %.9f seconds\n", elapsed_time / prime_count);
+    
+    return 0;
+}
